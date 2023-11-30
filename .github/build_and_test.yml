@@ -1,0 +1,38 @@
+name: Rust Build and Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-test:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-16.04]
+        rust: [stable, beta, nightly]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Rust
+      uses: actions/setup-rust@v1
+      with:
+        rust-version: ${{ matrix.rust }}
+
+    - name: Build and test
+      run: |
+        cargo build --verbose
+        cargo test --verbose
+
+    - name: Check code formatting
+      run: cargo fmt -- --check
+
+    - name: Check for clippy warnings
+      run: cargo clippy --all-targets --all-features -- -D warnings
