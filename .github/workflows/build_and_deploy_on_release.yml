@@ -1,0 +1,38 @@
+name: Build and Deploy Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Rust
+      uses: actions/setup-rust@v1
+      with:
+        rust-version: stable
+
+    - name: Build
+      run: cargo build --release
+      if: startsWith(github.event_name, 'release')
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Upload Release Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: release-artifacts
+        path: target/release/action-playground
