@@ -19,11 +19,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Rust
-      uses: actions/setup-rust@v1
-      with:
-        rust-version: ${{ matrix.rust }}
-
     - name: Build and test
       run: |
         cargo build --verbose
